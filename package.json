@@ -1,0 +1,27 @@
+{
+  "name": "devtree",
+  "version": "1.0.0",
+  "description": "Proyecto con Express y TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "dev:js": "node --watch index.js",
+    "dev:nodemon": "nodemon index.js",
+    "dev": "nodemon src/index.ts",
+    "dev:alt": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "author": "Givens Fit | @givensfit",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.2.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
