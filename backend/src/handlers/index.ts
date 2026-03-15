@@ -4,6 +4,7 @@ import slug from 'slug';
 import User from "../models/User"
 import { checkPassword, hashPassword } from '../utils/auth';
 import { generateJWT } from '../utils/jwt';
+import jwt from 'jsonwebtoken';
 
 export const createAccount = async(req: Request, res: Response) => {
   const { email, password } = req.body
@@ -47,13 +48,45 @@ export const login = async(req: Request, res: Response) => {
   }
 
   // GENERAR JWT
-  generateJWT(user)
-  res.send('Autenticado...')
+  /*
+  * npm i jsonwebtoken
+  * npm i -D @types/jsonwebtoken
+  */
+  const token =  generateJWT({id: user._id})
+  res.send(token)
 }
 
+export const getUser = async(req: Request, res: Response) => {
+  const bearer = req.headers.authorization
 
+  if(!bearer) {
+    const error = new Error('No Autorizado')
+    return res.status(401).json({
+      error: error.message
+    })
+  }
 
-/*
-* npm i jsonwebtoken
-* npm i -D @types/jsonwebtoken
-*/
+  const [, token] = bearer.split(' ')
+
+  if(!token) {
+    const error = new Error('No Autorizado')
+    return res.status(401).json({
+      error: error.message
+    })
+  }
+
+  try {
+    const result = jwt.verify(token, process.env.JWT_SECRET)
+    if(typeof result === 'object' && result.id) {
+      const user = await User.findById(result.id).select('-password')
+      if(!user) {
+        const error = new Error('El Usuario No Existe')
+        return res.status(404).json({error: error.message})
+      }
+
+      res.json(user)
+    }
+  } catch (error) {
+    res.status(500).json({error: 'Token No Válido'})
+  }
+}
