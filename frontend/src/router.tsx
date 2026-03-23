@@ -5,6 +5,8 @@ import AuthLayout from "./layouts/AuthLayout";
 import AppLayout from "./layouts/AppLayout";
 import LinkTreeView from "./pages/LinkTreeView";
 import ProfileView from "./pages/ProfileView";
+import HandlePage from "./pages/HandleView";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const appRouter = createBrowserRouter([
   {
@@ -32,6 +34,26 @@ const appRouter = createBrowserRouter([
       {
         path: 'profile',
         element: <ProfileView />
+      }
+    ]
+  },
+  {
+    path: '/:handle',
+    element: <AuthLayout />,
+    children: [
+      {
+        index: true,
+        element: <HandlePage />
+      }
+    ]
+  },
+  {
+    path: '/404',
+    element: <AuthLayout />,
+    children: [
+      {
+        index: true,
+        element: <NotFoundPage />
       }
     ]
   }

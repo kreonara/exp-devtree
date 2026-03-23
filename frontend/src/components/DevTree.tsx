@@ -2,7 +2,7 @@ import { Link, Outlet } from "react-router";
 import { Toaster } from "sonner";
 import NavigationTabs from "../components/NavigationTabs";
 import type { SocialNetwork, User } from "../types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import DevTreeLink from "./DevTreeLink";
 import { DragDropProvider } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
@@ -80,7 +80,7 @@ const DevTree = ({ data }: DevTreeProps) => {
           <div className="flex justify-end">
             <Link
               className="font-bold text-right text-slate-800 text-2xl"
-              to={''}
+              to={`/${data.handle}`}
               target="_blank"
               rel="noreferrer noopener"
             >Visitar Mi Perfil: /{data.handle}</Link>
