@@ -2,11 +2,29 @@ import { Link, Outlet } from "react-router";
 import { Toaster } from "sonner";
 import NavigationTabs from "../components/NavigationTabs";
 import type { SocialNetwork, User } from "../types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DevTreeLink from "./DevTreeLink";
+import { DragDropProvider } from "@dnd-kit/react";
+import { useSortable } from "@dnd-kit/react/sortable";
+import {move} from '@dnd-kit/helpers';
+import { useQueryClient } from '@tanstack/react-query';
 
 type DevTreeProps = {
   data: User
+}
+
+function Sortable({ link, index }: {link: SocialNetwork, index: number}) {
+  const [element, setElement] = useState<Element | null>(null)
+  // const handleRef = useRef<any | null>(null)
+  const { isDragging } = useSortable({
+    id: link.id,
+    index,
+    element,
+    // handle: handleRef
+  })
+
+  // return <DevTreeLink handleRef={handleRef} key={link.name} link={link} setElement={setElement} isDragging={isDragging} />
+  return <DevTreeLink key={link.name} link={link} setElement={setElement} isDragging={isDragging} />
 }
 
 const DevTree = ({ data }: DevTreeProps) => {
@@ -17,6 +35,25 @@ const DevTree = ({ data }: DevTreeProps) => {
     setEnabledLinks(eLinks)
   }, [data])
   
+  const queryClient = useQueryClient()
+  const handleDragEnd = (event: any) => {
+    setEnabledLinks( enabledLinks => {
+      const newOrder = move(enabledLinks, event)
+      const disabledLinks: SocialNetwork[] = JSON.parse(data.links).filter((item: SocialNetwork) => !item.enabled)
+      const links = newOrder.concat(disabledLinks)
+
+      queryClient.setQueryData(['user'], (prevData: User) => {
+        return {
+          ...prevData,
+          links: JSON.stringify(links)
+        }
+      })
+
+      return newOrder
+    })
+
+
+  }
 
   return (
     <>
@@ -67,13 +104,18 @@ const DevTree = ({ data }: DevTreeProps) => {
 
               <p className="text-center text-lg font-black text-white">{data?.description}</p>
 
-              <div className="mt-20 flex flex-col gap-5">
-                {
-                  enabledLinks.map(link => (
-                    <DevTreeLink key={link.name} link={link} />
-                  ))
-                }
-              </div>
+              <DragDropProvider
+                onDragEnd={handleDragEnd}
+              >
+                <ul className="mt-20 flex flex-col gap-5">
+                  {
+                    enabledLinks.map((link, index) => (
+                      <Sortable key={link.name} link={link} index={index} />
+                    ))
+                  }
+                </ul> 
+              </DragDropProvider>
+
             </div>
           </div>
         </main>
