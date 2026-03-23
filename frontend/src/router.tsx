@@ -7,8 +7,13 @@ import LinkTreeView from "./pages/LinkTreeView";
 import ProfileView from "./pages/ProfileView";
 import HandlePage from "./pages/HandleView";
 import NotFoundPage from "./pages/NotFoundPage";
+import HomePage from "./pages/HomePage";
 
 const appRouter = createBrowserRouter([
+  {
+    path: '/',
+    element: <HomePage />
+  },
   {
     path: '/auth',
     element: <AuthLayout />,
